@@ -29,7 +29,7 @@
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 	
     }else{
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Augmented Reality is not supported on this device" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Augmented Reality is not supported on this device (min iPad2 or iPhone3GS)" delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles:nil];
         [alert show];
         [alert release];
 	}
@@ -60,7 +60,6 @@
 - (void) setupAR{
     // setup AR
     arController = [[AugmentedRealityController alloc] initWithViewController:self];
-	arController.debugMode = YES;
 	arController.scaleViewsBasedOnDistance = NO;
 	arController.minimumScaleFactor = 0.5;
 	arController.rotateViewsBasedOnPerspective = NO;

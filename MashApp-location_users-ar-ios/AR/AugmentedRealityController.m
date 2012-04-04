@@ -15,6 +15,8 @@
 #define degreesToRadian(x) (M_PI * (x) / 180.0)
 #define radianToDegrees(x) ((x) * 180.0/M_PI)
 
+#define canvasFrame CGRectMake(0, 0, 320, 480)
+
 #pragma mark -
 
 @interface AugmentedRealityController (Private) 
@@ -30,8 +32,8 @@
 @implementation AugmentedRealityController
 
 @synthesize locationManager, accelerometerManager, displayView, centerCoordinate, scaleViewsBasedOnDistance, rotateViewsBasedOnPerspective, maximumScaleDistance, minimumScaleFactor, maximumRotationAngle, centerLocation, coordinates, currentOrientation, degreeRange, rootViewController;
-@synthesize debugMode, debugView, latestHeading, viewAngle, coordinateViews;
-@synthesize cameraController;
+@synthesize latestHeading, viewAngle, coordinateViews;
+@synthesize captureSession;
 
 
 #pragma mark - 
@@ -41,61 +43,52 @@
 	coordinates		= [[NSMutableArray alloc] init];
 	coordinateViews	= [[NSMutableArray alloc] init];
 	latestHeading	= -1.0f;
-	debugView		= nil;
-	
+
+	// save root controller
 	self.rootViewController = vc; 
 
-	self.debugMode = YES; 
 	self.maximumScaleDistance = 1.3;
 	self.minimumScaleFactor = 0.3;
 	self.scaleViewsBasedOnDistance = YES;
 	self.rotateViewsBasedOnPerspective = NO;
 	self.maximumRotationAngle = M_PI / 6.0;
-	
-	CGRect screenRect = [[UIScreen mainScreen] bounds];
-	
-	displayView = [[UIView alloc] initWithFrame: screenRect]; 
+
+	// add work view
+	displayView = [[UIImageView alloc] initWithFrame:canvasFrame]; 
+    [vc.view addSubview:displayView];
+    displayView.clipsToBounds = YES;
+    
 	self.currentOrientation = UIDeviceOrientationPortrait; 
 	self.degreeRange = self.displayView.bounds.size.width / 12; 
 
-	vc.view = self.displayView; 
-	
-	self.cameraController = [[[UIImagePickerController alloc] init] autorelease];
-	self.cameraController.sourceType = UIImagePickerControllerSourceTypeCamera;
-	self.cameraController.cameraViewTransform = CGAffineTransformScale(self.cameraController.cameraViewTransform, 1.13f,  1.13f);
-	self.cameraController.showsCameraControls = NO;
-	self.cameraController.navigationBarHidden = YES;
-	self.cameraController.cameraOverlayView = self.displayView;
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name: UIDeviceOrientationDidChangeNotification object:nil];
-    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];	
-	
 	[self startListening];
-    
-	
+    	
     return self;
 }
 
 - (void)dealloc {
-	[[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 
 	self.locationManager = nil;
 	self.coordinateViews = nil;
-	self.debugView = nil;
 
 	[coordinates release];
     [super dealloc];
 }
 
 // This is needed to start showing the Camera of the Augemented Reality Toolkit.
-- (void)displayAR {
-    [rootViewController presentModalViewController:self.cameraController animated:NO];
-	displayView.frame = self.cameraController.view.bounds; 
+- (void)displayAR{
+    [self initCapture];
 }
 
 - (void)dissmisAR {
-    [self.cameraController dismissModalViewControllerAnimated:NO ];
-    [self.cameraController removeFromParentViewController];
+    [captureSession stopRunning];
+    
+    [displayView setImage:nil];
+    for(UIView *view in displayView.subviews){
+        [view removeFromSuperview];
+    }
+    
+    self.captureSession = nil;
 }
 
 - (void)startListening {
@@ -172,42 +165,6 @@
 
 
 #pragma mark - 
-#pragma mark NSNotificationCenter
-
-- (void)deviceOrientationDidChange:(NSNotification *)notification {
-	
-	UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-	
-	// Later we may handle the Orientation of Faceup to show a Map.  For now let's ignore it.
-	if (orientation != UIDeviceOrientationUnknown && orientation != UIDeviceOrientationFaceUp && orientation != UIDeviceOrientationFaceDown) {
-		
-		CGAffineTransform transform = CGAffineTransformMakeRotation(degreesToRadian(0));
-		CGRect bounds = [[UIScreen mainScreen] bounds];
-		
-		if (orientation == UIDeviceOrientationLandscapeLeft) {
-			transform		   = CGAffineTransformMakeRotation(degreesToRadian(90));
-			bounds.size.width  = [[UIScreen mainScreen] bounds].size.height;
-			bounds.size.height = [[UIScreen mainScreen] bounds].size.width;
-		}
-		else if (orientation == UIDeviceOrientationLandscapeRight) {
-			transform		   = CGAffineTransformMakeRotation(degreesToRadian(-90));
-			bounds.size.width  = [[UIScreen mainScreen] bounds].size.height;
-			bounds.size.height = [[UIScreen mainScreen] bounds].size.width;
-		}
-		else if (orientation == UIDeviceOrientationPortraitUpsideDown)
-			transform = CGAffineTransformMakeRotation(degreesToRadian(180));
-		
-		displayView.transform = CGAffineTransformIdentity;
-		displayView.transform = transform;
-		displayView.bounds = bounds;
-		
-		self.degreeRange = self.displayView.bounds.size.width / 12;
-		self.debugMode = YES;
-	}
-}
-
-
-#pragma mark - 
 #pragma mark  Private methods 
 
 // called when updating acceleration or locationHeading 
@@ -271,8 +228,7 @@
 }
 
 // called by updateLocations 
-- (BOOL)viewportContainsView:(UIView *)viewToDraw  forCoordinate:(ARCoordinate *)coordinate {
-	
+- (BOOL)viewportContainsView:(UIView *)viewToDraw  forCoordinate:(ARCoordinate *)coordinate {    
 	double currentAzimuth = self.centerCoordinate.azimuth;
 	double pointAzimuth	  = coordinate.azimuth;
 	BOOL isBetweenNorth	  = NO;
@@ -347,10 +303,9 @@
 
 - (void)updateLocations {
 	
-	if (!coordinateViews || [coordinateViews count] == 0) 
+	if (!coordinateViews || [coordinateViews count] == 0) {
 		return;
-	
-	debugView.text = [NSString stringWithFormat:@"%.3f %.3f ", -radianToDegrees(viewAngle), self.centerCoordinate.azimuth];
+    }
 	
 	int index			= 0;
 	int totalDisplayed	= 0;
@@ -362,6 +317,7 @@
 		if ([self viewportContainsView:viewToDraw forCoordinate:item]) {
 			
 			CGPoint loc = [self pointInView:self.displayView withView:viewToDraw forCoordinate:item];
+            
 			CGFloat scaleFactor = 1.0;
 	
 			if ([self scaleViewsBasedOnDistance]) 
@@ -403,6 +359,13 @@
 				[self.displayView addSubview:viewToDraw];
 				[self.displayView sendSubviewToBack:viewToDraw];
 			}
+            
+           
+            
+            if(viewToDraw.frame.origin.y < 0 || viewToDraw.frame.size.height > displayView.frame.size.height){
+                 NSLog(@"y=%f, h=%f", viewToDraw.frame.origin.y, viewToDraw.frame.size.height);
+               // [viewToDraw removeFromSuperview];
+            }
 		
         } else{ 
 			[viewToDraw removeFromSuperview];
@@ -414,37 +377,102 @@
 
 
 #pragma mark -
-#pragma mark Debug
+#pragma mark Capture
 
-- (void)setupDebugPostion {
-	if (self.debugMode) {
-		[debugView sizeToFit];
-		CGRect displayRect = self.displayView.bounds;
-		
-		debugView.frame = CGRectMake(0, displayRect.size.height - debugView.bounds.size.height,  displayRect.size.width, debugView.bounds.size.height);
-	}
+- (IBAction) initCapture {
+    
+	/*We setup the input*/
+	AVCaptureDeviceInput *captureInput = [AVCaptureDeviceInput 
+										  deviceInputWithDevice:[AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo] 
+										  error:nil];
+	/*We setupt the output*/
+	AVCaptureVideoDataOutput *captureOutput = [[AVCaptureVideoDataOutput alloc] init];
+	/*While a frame is processes in -captureOutput:didOutputSampleBuffer:fromConnection: delegate methods no other frames are added in the queue.
+	 If you don't want this behaviour set the property to NO */
+	captureOutput.alwaysDiscardsLateVideoFrames = YES; 
+	/*We specify a minimum duration for each frame (play with this settings to avoid having too many frames waiting
+	 in the queue because it can cause memory issues). It is similar to the inverse of the maximum framerate.
+	 In this example we set a min frame duration of 1/10 seconds so a maximum framerate of 10fps. We say that
+	 we are not able to process more than 10 frames per second.*/
+	captureOutput.minFrameDuration = CMTimeMake(1, 15);
+	
+	/*We create a serial queue to handle the processing of our frames*/
+	dispatch_queue_t queue;
+	queue = dispatch_queue_create("cameraQueue", NULL);
+	[captureOutput setSampleBufferDelegate:self queue:queue];
+	dispatch_release(queue);
+	// Set the video output to store frame in BGRA (It is supposed to be faster)
+	NSString* key = (NSString*)kCVPixelBufferPixelFormatTypeKey; 
+	NSNumber* value = [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA]; 
+	NSDictionary* videoSettings = [NSDictionary dictionaryWithObject:value forKey:key]; 
+	[captureOutput setVideoSettings:videoSettings]; 
+	/*And we create a capture session*/
+	captureSession = [[AVCaptureSession alloc] init];
+	/*We add input and output*/
+	[self.captureSession addInput:captureInput];
+	[self.captureSession addOutput:captureOutput];
+    
+    [captureOutput release];
+    
+    [self.captureSession setSessionPreset:AVCaptureSessionPreset640x480];
+	
+	/*We start the capture*/
+	[self.captureSession startRunning];
 }
 
-- (void)setDebugMode:(BOOL)flag {
-	if (debugMode == flag) {
-		currentOrientation = [[UIDevice currentDevice] orientation];
-
-		CGRect debugRect  = CGRectMake(0, self.displayView.bounds.size.height -20, self.displayView.bounds.size.width, 20);	
-		debugView.frame = debugRect;
-		return;
-	}
+#pragma mark -
+#pragma mark AVCaptureSession delegate
+- (void)captureOutput:(AVCaptureOutput *)captureOutput 
+didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer 
+	   fromConnection:(AVCaptureConnection *)connection 
+{ 
+	/*We create an autorelease pool because as we are not in the main_queue our code is
+	 not executed in the main thread. So we have to create an autorelease pool for the thread we are in*/
 	
-	debugMode = flag;
+    //	CGFloat angleInRadians = -90 * (M_PI / 180);
 	
-	if ([self debugMode]) {
-		debugView = [[UILabel alloc] initWithFrame:CGRectZero];
-		debugView.textAlignment = UITextAlignmentCenter;
-		debugView.text = @"Waiting...";
-		[displayView addSubview:debugView];
-		[self setupDebugPostion];
-	} else {
-		[debugView removeFromSuperview];
-    }
-}
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer); 
+    /*Lock the image buffer*/
+    CVPixelBufferLockBaseAddress(imageBuffer,0); 
+    /*Get information about the image*/
+    uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(imageBuffer); 
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer); 
+    size_t width = CVPixelBufferGetWidth(imageBuffer); 
+    size_t height = CVPixelBufferGetHeight(imageBuffer);  
+    
+    /*Create a CGImageRef from the CVImageBufferRef*/
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB(); 
+    CGContextRef newContext = CGBitmapContextCreate(baseAddress, width, height, 8, bytesPerRow, colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    //	CGContextRotateCTM(newContext, -angleInRadians);
+    CGImageRef newImage = CGBitmapContextCreateImage(newContext); 
+	
+    /*We release some components*/
+    CGContextRelease(newContext); 
+    CGColorSpaceRelease(colorSpace);
+    
+    /*We display the result on the custom layer. All the display stuff must be done in the main thread because
+	 UIKit is no thread safe, and as we are not in the main thread (remember we didn't use the main_queue)
+	 we use performSelectorOnMainThread to call our CALayer and tell it to display the CGImage.*/
+	//[self.customLayer performSelectorOnMainThread:@selector(setContents:) withObject: (id) newImage waitUntilDone:YES];
+	
+    
+	/*We display the result on the image view (We need to change the orientation of the image so that the video is displayed correctly).
+	 Same thing as for the CALayer we are not in the main thread so ...*/
+	UIImage *image= [UIImage imageWithCGImage:newImage scale:1 orientation:UIImageOrientationRight];
+	
+    //    + (UIImage *)imageWithCGImage:(CGImageRef)imageRef scale:(CGFloat)scale orientation:(UIImageOrientation)orientation
+    
+    
+	/*We relase the CGImageRef*/
+	CGImageRelease(newImage);
+	
+	[displayView performSelectorOnMainThread:@selector(setImage:) withObject:image waitUntilDone:YES];
+	
+	/*We unlock the  image buffer*/
+	CVPixelBufferUnlockBaseAddress(imageBuffer,0);
+	
+	[pool drain];
+} 
 
 @end

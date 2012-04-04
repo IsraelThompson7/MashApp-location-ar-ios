@@ -8,7 +8,7 @@
 
 @class ARCoordinate;
 
-@interface AugmentedRealityController : NSObject <UIAccelerometerDelegate, CLLocationManagerDelegate> {
+@interface AugmentedRealityController : NSObject <UIAccelerometerDelegate, CLLocationManagerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate> {
 @private
 	NSMutableArray		*coordinates;
 }
@@ -30,13 +30,14 @@
 @property (nonatomic, retain) CLLocationManager       *locationManager;
 @property (nonatomic, retain) ARCoordinate            *centerCoordinate;
 @property (nonatomic, retain) CLLocation              *centerLocation;
-@property (nonatomic, retain) UIView                  *displayView;
+@property (nonatomic, retain) UIImageView                  *displayView;
 @property (nonatomic, retain) UIViewController        *rootViewController;
-@property (nonatomic, retain) UIImagePickerController *cameraController;
 @property (nonatomic, assign) UIDeviceOrientation	  currentOrientation;
 
-@property (nonatomic, assign) BOOL    debugMode;
-@property (nonatomic, retain) UILabel *debugView;
+/*!
+ @brief	The capture session takes the input from the camera and capture it
+ */
+@property (nonatomic, retain) AVCaptureSession *captureSession;
 
 
 - (id)initWithViewController:(UIViewController *)theView;
@@ -44,8 +45,6 @@
 - (void)dissmisAR;
 
 - (void)updateLocations;
-
-- (void)setupDebugPostion;
 
 // Adding coordinates to the underlying data model.
 - (void)addCoordinate:(ARCoordinate *)coordinate augmentedView:(UIView *)agView animated:(BOOL)animated ;

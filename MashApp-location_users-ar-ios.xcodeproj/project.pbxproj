@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		FA2F4CA81520800200EE031C /* marker_map.png in Resources */ = {isa = PBXBuildFile; fileRef = FA2F4CA71520800200EE031C /* marker_map.png */; };
+		FA43ACE4152B5C73000A2EF7 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA43ACE3152B5C73000A2EF7 /* AVFoundation.framework */; };
 		FA8D87A1152073EB00E23338 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8D87A0152073EB00E23338 /* UIKit.framework */; };
 		FA8D87A3152073EB00E23338 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8D87A2152073EB00E23338 /* Foundation.framework */; };
 		FA8D87A5152073EB00E23338 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8D87A4152073EB00E23338 /* CoreGraphics.framework */; };
@@ -22,7 +23,6 @@
 		FA8D87CC1520763800E23338 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8D87CB1520763700E23338 /* MobileCoreServices.framework */; };
 		FA8D87CE1520763D00E23338 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8D87CD1520763D00E23338 /* CFNetwork.framework */; };
 		FA8D87D01520765400E23338 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8D87CF1520765400E23338 /* CoreLocation.framework */; };
-		FA8D895F1520CF7600CD6290 /* Quickblox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8D895E1520CF7600CD6290 /* Quickblox.framework */; };
 		FA8D896F1520D71100CD6290 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8D896E1520D71100CD6290 /* MapKit.framework */; };
 		FA8D89711520D9FF00CD6290 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA8D89701520D9FF00CD6290 /* QuartzCore.framework */; };
 		FA8D89971521053700CD6290 /* ARKit.m in Sources */ = {isa = PBXBuildFile; fileRef = FA8D898C1521053700CD6290 /* ARKit.m */; };
@@ -30,10 +30,14 @@
 		FA8D89991521053700CD6290 /* ARCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA8D89911521053700CD6290 /* ARCoordinate.m */; };
 		FA8D899A1521053700CD6290 /* ARGeoCoordinate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA8D89931521053700CD6290 /* ARGeoCoordinate.m */; };
 		FA8D899B1521053700CD6290 /* MarkerView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA8D89961521053700CD6290 /* MarkerView.m */; };
+		FAF0040E1524A6820028DC60 /* Quickblox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAF0040D1524A6820028DC60 /* Quickblox.framework */; };
+		FAFCBACD152C731D0042B1C1 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAFCBACC152C731D0042B1C1 /* CoreMedia.framework */; };
+		FAFCBAD0152C733F0042B1C1 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAFCBACF152C733F0042B1C1 /* CoreVideo.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		FA2F4CA71520800200EE031C /* marker_map.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = marker_map.png; sourceTree = "<group>"; };
+		FA43ACE3152B5C73000A2EF7 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FA8D879C152073EB00E23338 /* MashApp-location_users-ar-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MashApp-location_users-ar-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA8D87A0152073EB00E23338 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FA8D87A2152073EB00E23338 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -54,7 +58,6 @@
 		FA8D87CB1520763700E23338 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		FA8D87CD1520763D00E23338 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		FA8D87CF1520765400E23338 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		FA8D895E1520CF7600CD6290 /* Quickblox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quickblox.framework; path = "../../SDK-ios/Framework/build/Framework/Quickblox.framework"; sourceTree = "<group>"; };
 		FA8D896E1520D71100CD6290 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		FA8D89701520D9FF00CD6290 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		FA8D898B1521053700CD6290 /* ARKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARKit.h; sourceTree = "<group>"; };
@@ -67,6 +70,9 @@
 		FA8D89931521053700CD6290 /* ARGeoCoordinate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARGeoCoordinate.m; sourceTree = "<group>"; };
 		FA8D89951521053700CD6290 /* MarkerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerView.h; sourceTree = "<group>"; };
 		FA8D89961521053700CD6290 /* MarkerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerView.m; sourceTree = "<group>"; };
+		FAF0040D1524A6820028DC60 /* Quickblox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Quickblox.framework; sourceTree = "<group>"; };
+		FAFCBACC152C731D0042B1C1 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		FAFCBACF152C733F0042B1C1 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +80,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAFCBAD0152C733F0042B1C1 /* CoreVideo.framework in Frameworks */,
+				FAFCBACD152C731D0042B1C1 /* CoreMedia.framework in Frameworks */,
+				FA43ACE4152B5C73000A2EF7 /* AVFoundation.framework in Frameworks */,
 				FA8D89711520D9FF00CD6290 /* QuartzCore.framework in Frameworks */,
 				FA8D896F1520D71100CD6290 /* MapKit.framework in Frameworks */,
 				FA8D87D01520765400E23338 /* CoreLocation.framework in Frameworks */,
@@ -84,7 +93,7 @@
 				FA8D87A1152073EB00E23338 /* UIKit.framework in Frameworks */,
 				FA8D87A3152073EB00E23338 /* Foundation.framework in Frameworks */,
 				FA8D87A5152073EB00E23338 /* CoreGraphics.framework in Frameworks */,
-				FA8D895F1520CF7600CD6290 /* Quickblox.framework in Frameworks */,
+				FAF0040E1524A6820028DC60 /* Quickblox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,13 +129,16 @@
 		FA8D879F152073EB00E23338 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FAF0040D1524A6820028DC60 /* Quickblox.framework */,
+				FAFCBACF152C733F0042B1C1 /* CoreVideo.framework */,
+				FAFCBACC152C731D0042B1C1 /* CoreMedia.framework */,
 				FA8D89701520D9FF00CD6290 /* QuartzCore.framework */,
+				FA43ACE3152B5C73000A2EF7 /* AVFoundation.framework */,
 				FA8D87CF1520765400E23338 /* CoreLocation.framework */,
 				FA8D87CD1520763D00E23338 /* CFNetwork.framework */,
 				FA8D896E1520D71100CD6290 /* MapKit.framework */,
 				FA8D87CB1520763700E23338 /* MobileCoreServices.framework */,
 				FA8D87C91520762C00E23338 /* libz.dylib */,
-				FA8D895E1520CF7600CD6290 /* Quickblox.framework */,
 				FA8D87C71520762400E23338 /* SystemConfiguration.framework */,
 				FA8D87A0152073EB00E23338 /* UIKit.framework */,
 				FA8D87A2152073EB00E23338 /* Foundation.framework */,
@@ -352,11 +364,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../SDK-ios/Framework/build/Framework\"",
+					"\"$(SRCROOT)\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MashApp-location_users-ar-ios/MashApp-location_users-ar-ios-Prefix.pch";
 				INFOPLIST_FILE = "MashApp-location_users-ar-ios/MashApp-location_users-ar-ios-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -367,11 +381,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../SDK-ios/Framework/build/Framework\"",
+					"\"$(SRCROOT)\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MashApp-location_users-ar-ios/MashApp-location_users-ar-ios-Prefix.pch";
 				INFOPLIST_FILE = "MashApp-location_users-ar-ios/MashApp-location_users-ar-ios-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
